@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HR Greenz | Fresh Fruits & Vegetables</title>
+<style>
+:root{--g:#138a36;--g2:#0b6b29;--light:#effbf1;--yellow:#ffc928;--text:#202420;--muted:#6b746d}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#f7faf7;color:var(--text)}
+header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e7eee8;display:flex;align-items:center;gap:22px;padding:13px 5%}
+.logo{font-size:27px;font-weight:800;color:var(--g);white-space:nowrap}.logo span{color:#f2b900}
+.search{flex:1;max-width:600px;position:relative}.search input{width:100%;padding:13px 18px 13px 42px;border:1px solid #d9e2da;border-radius:28px;font-size:15px;outline:none}.search b{position:absolute;left:16px;top:12px}
+nav{display:flex;gap:16px}nav a{text-decoration:none;color:#333;font-weight:600}
+.cart-btn{border:0;background:var(--g);color:#fff;padding:11px 16px;border-radius:24px;font-weight:700;cursor:pointer;white-space:nowrap}
+.hero{padding:62px 6%;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:30px;background:linear-gradient(120deg,#eaffeb,#fff)}
+.badge{display:inline-block;background:#fff2bf;color:#765900;padding:8px 13px;border-radius:20px;font-weight:bold;margin-bottom:15px}
+.hero h1{font-size:52px;line-height:1.08;color:var(--g);margin-bottom:17px}.hero p{font-size:19px;color:#555;line-height:1.6;margin-bottom:25px}.btn{display:inline-block;border:0;background:var(--g);color:#fff;padding:14px 24px;border-radius:28px;font-weight:800;text-decoration:none;cursor:pointer}
+.hero-art{font-size:90px;text-align:center;line-height:1.4}
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;padding:25px 6%;background:#fff}.trust div{text-align:center;padding:15px;border-right:1px solid #eee}.trust strong{display:block;color:var(--g);margin-top:6px}
+.section{padding:52px 6%}.title{text-align:center;margin-bottom:27px}.title h2{font-size:33px;color:var(--g)}.title p{color:var(--muted);margin-top:7px}
+.categories{display:grid;grid-template-columns:repeat(6,1fr);gap:15px}.cat{background:#fff;border:1px solid #e8eee9;border-radius:15px;padding:20px 10px;text-align:center;cursor:pointer;transition:.2s}.cat:hover{transform:translateY(-3px);box-shadow:0 7px 18px #00000012}.cat .emoji{font-size:42px}.cat h3{font-size:15px;margin-top:8px}
+.offer{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.offer-card{padding:25px;border-radius:18px;min-height:150px;background:#e9f9ec}.offer-card:nth-child(2){background:#fff3cc}.offer-card:nth-child(3){background:#eaf4ff}.offer-card h3{font-size:23px;margin:7px 0}.offer-card p{color:#555;line-height:1.5}.offer-card button{margin-top:14px;border:0;background:var(--g);color:#fff;padding:9px 16px;border-radius:20px;cursor:pointer}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:10px}.toolbar select{padding:10px 14px;border:1px solid #ddd;border-radius:9px;background:#fff}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.product{background:#fff;border:1px solid #e5ebe6;border-radius:16px;padding:16px;position:relative}.pic{height:145px;border-radius:12px;background:#f2faf3;display:flex;align-items:center;justify-content:center;font-size:75px}.tag{position:absolute;top:25px;left:25px;background:#e33;color:#fff;padding:5px 8px;border-radius:6px;font-size:12px;font-weight:bold}.product h3{margin:13px 0 7px}.rating{font-size:13px;color:#e09a00}.price{margin:9px 0}.price strong{font-size:19px;color:var(--g)}.old{text-decoration:line-through;color:#999;font-size:13px;margin-left:5px}.add{width:100%;padding:10px;border:1px solid var(--g);background:#fff;color:var(--g);border-radius:9px;font-weight:bold;cursor:pointer}.add:hover{background:var(--g);color:#fff}
+.about{background:var(--light);padding:55px 15%;text-align:center}.about h2{color:var(--g);margin-bottom:13px}.about p{line-height:1.8;color:#555}
+footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-columns:2fr 1fr 1fr;gap:25px}footer h3{margin-bottom:10px}footer p,footer a{color:#dcebdd;line-height:1.8;text-decoration:none}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:100;align-items:center;justify-content:center;padding:18px}.box{background:#fff;border-radius:18px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:25px}.close{float:right;border:0;background:none;font-size:26px;cursor:pointer}.box h2{color:var(--g);margin-bottom:16px}.cart-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:12px 0}.qty button{width:27px;height:27px;border:0;background:var(--g);color:#fff;border-radius:50%;cursor:pointer}.summary{background:#f4f8f4;padding:15px;border-radius:10px;margin:16px 0;line-height:1.9}.form input,.form textarea,.form select{width:100%;padding:12px;margin:6px 0 10px;border:1px solid #d8e0d9;border-radius:8px}.form textarea{height:80px}.empty{text-align:center;padding:25px;color:#777}
+@media(max-width:900px){nav{display:none}.categories{grid-template-columns:repeat(3,1fr)}.products{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:42px}.trust{grid-template-columns:repeat(2,1fr)}footer{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){header{flex-wrap:wrap}.search{order:3;flex-basis:100%}.hero{grid-template-columns:1fr;text-align:center}.hero-art{font-size:65px}.categories,.products,.offer{grid-template-columns:1fr 1fr}.section{padding:40px 5%}.trust{grid-template-columns:1fr 1fr}.trust div{border:0}.products{gap:12px}footer{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🥬 HR <span>Greenz</span></div>
+  <div class="search"><b>🔍</b><input id="search" placeholder="Search fruits, vegetables..." oninput="render()"></div>
+  <nav><a href="#home">Home</a><a href="#products">Shop</a><a href="#about">About</a></nav>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart <span id="count">0</span></button>
+</header>
+
+<section class="hero" id="home">
+  <div>
+    <span class="badge">🌱 Fresh • Local • Trusted</span>
+    <h1>Freshness Delivered to Your Door</h1>
+    <p>Shop fresh fruits and vegetables from trusted nearby stores. Simple ordering, transparent prices and convenient local delivery.</p>
+    <a class="btn" href="#products">Shop Fresh Products</a>
+  </div>
+  <div class="hero-art">🍎 🥦 🥕<br>🍅 🥭 🍌</div>
+</section>
+
+<div class="trust">
+  <div>🚚<strong>Fast Local Delivery</strong><small>Convenient doorstep service</small></div>
+  <div>🌿<strong>Fresh Produce</strong><small>Quality-focused selection</small></div>
+  <div>💰<strong>Best Value</strong><small>Affordable everyday prices</small></div>
+  <div>🛡️<strong>Trusted Stores</strong><small>Local seller network</small></div>
+</div>
+
+<section class="section">
+  <div class="title"><h2>Shop By Category</h2><p>Choose what you need today</p></div>
+  <div class="categories">
+    <div class="cat" onclick="setCat('fruit')"><div class="emoji">🍎</div><h3>Fruits</h3></div>
+    <div class="cat" onclick="setCat('vegetable')"><div class="emoji">🥦</div><h3>Vegetables</h3></div>
+    <div class="cat" onclick="setCat('leafy')"><div class="emoji">🥬</div><h3>Leafy Greens</h3></div>
+    <div class="cat" onclick="setCat('seasonal')"><div class="emoji">🥭</div><h3>Seasonal</h3></div>
+    <div class="cat" onclick="setCat('daily')"><div class="emoji">🥔</div><h3>Daily Essentials</h3></div>
+    <div class="cat" onclick="setCat('all')"><div class="emoji">🛍️</div><h3>View All</h3></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="title"><h2>Today's Offers 🎁</h2><p>Save more on your everyday groceries</p></div>
+  <div class="offer">
+    <div class="offer-card"><span>🍎🍌</span><h3>Fruit Combo</h3><p>Mix of popular fresh fruits at a special price.</p><button onclick="setCat('fruit')">Shop Fruits</button></div>
+    <div class="offer-card"><span>🥕🥔</span><h3>Veggie Basket</h3><p>Daily vegetables for your family kitchen.</p><button onclick="setCat('vegetable')">Shop Vegetables</button></div>
+    <div class="offer-card"><span>🥭</span><h3>Seasonal Picks</h3><p>Fresh seasonal produce while stocks last.</p><button onclick="setCat('seasonal')">Explore Offers</button></div>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="title"><h2>Fresh Products</h2><p>Hand-picked categories for your daily needs</p></div>
+  <div class="toolbar"><b id="resultText">All Products</b><select id="sort" onchange="render()"><option value="default">Sort: Recommended</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option></select></div>
+  <div class="products" id="grid"></div>
+</section>
+
+<section class="about" id="about">
+  <h2>Why HR Greenz?</h2>
+  <p>HR Greenz is designed as a local fresh-produce marketplace connecting customers with trusted nearby stores. Our goal is to make fresh fruits and vegetables easy to discover, order and receive at home.</p>
+</section>
+
+<footer id="contact">
+  <div><h3>🥬 HR Greenz</h3><p>Freshness delivered to your door.</p><p>📍 Bilaspur, Chhattisgarh</p></div>
+  <div><h3>Quick Links</h3><p><a href="#home">Home</a></p><p><a href="#products">Shop</a></p><p><a href="#about">About</a></p></div>
+  <div><h3>Contact</h3><p>📞 +91 93245 84783</p><p>📧 hrgreenz@example.com</p><p>💬 WhatsApp Orders</p></div>
+</footer>
+
+<div class="modal" id="modal">
+ <div class="box">
+  <button class="close" onclick="closeCart()">×</button>
+  <h2>🛒 Your Cart</h2>
+  <div id="cartItems"></div>
+  <div class="summary"><div>Subtotal: ₹<span id="sub">0</span></div><div>Delivery: ₹<span id="delivery">0</span></div><div><b>Grand Total: ₹<span id="total">0</span></b></div></div>
+  <div class="form">
+   <h3>Delivery Details</h3>
+   <input id="name" placeholder="Full Name">
+   <input id="phone" placeholder="Mobile Number">
+   <input id="pincode" placeholder="Pincode">
+   <textarea id="address" placeholder="Complete Delivery Address"></textarea>
+   <select id="payment"><option>Cash on Delivery</option><option>UPI / Online Payment</option></select>
+   <button class="btn" style="width:100%;margin-top:5px" onclick="placeOrder()">Place Order on WhatsApp 📲</button>
+  </div>
+ </div>
+</div>
+
+<script>
+const products=[
+["Fresh Apples",120,"kg","🍎","fruit","20% OFF",4.7],
+["Banana",60,"dozen","🍌","fruit","10% OFF",4.6],
+["Mango",100,"kg","🥭","seasonal","25% OFF",4.8],
+["Orange",90,"kg","🍊","fruit","15% OFF",4.5],
+["Broccoli",80,"kg","🥦","vegetable","10% OFF",4.7],
+["Carrot",50,"kg","🥕","vegetable","5% OFF",4.6],
+["Tomato",40,"kg","🍅","daily","10% OFF",4.5],
+["Potato",35,"kg","🥔","daily","5% OFF",4.4],
+["Spinach",30,"bunch","🥬","leafy","10% OFF",4.6],
+["Cucumber",45,"kg","🥒","vegetable","10% OFF",4.5],
+["Papaya",70,"kg","🍈","seasonal","15% OFF",4.4],
+["Grapes",110,"kg","🍇","fruit","12% OFF",4.7]
+];
+let cat="all",cart=[];
+
+function setCat(c){cat=c;document.getElementById("products").scrollIntoView({behavior:"smooth"});render()}
+function render(){
+ let q=document.getElementById("search").value.toLowerCase(),list=products.filter(p=>(cat==="all"||p[4]===cat)&&p[0].toLowerCase().includes(q));
+ let s=document.getElementById("sort").value;if(s==="low")list.sort((a,b)=>a[1]-b[1]);if(s==="high")list.sort((a,b)=>b[1]-a[1]);
+ document.getElementById("resultText").textContent=(cat==="all"?"All Products":cat[0].toUpperCase()+cat.slice(1))+" • "+list.length+" items";
+ document.getElementById("grid").innerHTML=list.map(p=>`<div class="product"><span class="tag">${p[5]}</span><div class="pic">${p[3]}</div><h3>${p[0]}</h3><div class="rating">⭐ ${p[6]} • Fresh</div><div class="price"><strong>₹${p[1]}</strong> / ${p[2]}</div><button class="add" onclick="add('${p[0]}')">Add to Cart</button></div>`).join("")||'<div class="empty">No matching products found.</div>';
+}
+function add(name){let p=products.find(x=>x[0]===name),i=cart.find(x=>x[0]===name);i?i[6]++:cart.push([...p,1]);update()}
+function change(name,d){let i=cart.findIndex(x=>x[0]===name);if(i<0)return;cart[i][6]+=d;if(cart[i][6]<=0)cart.splice(i,1);update()}
+function update(){
+ document.getElementById("count").textContent=cart.reduce((a,x)=>a+x[6],0);
+ document.getElementById("cartItems").innerHTML=cart.length?cart.map(x=>`<div class="cart-row"><span>${x[3]} <b>${x[0]}</b><br><small>₹${x[1]} / ${x[2]}</small></span><span class="qty"><button onclick="change('${x[0]}',-1)">−</button> ${x[6]} <button onclick="change('${x[0]}',1)">+</button></span><b>₹${x[1]*x[6]}</b></div>`).join(""):'<div class="empty">Your cart is empty. Add some fresh products!</div>';
+ let sub=cart.reduce((a,x)=>a+x[1]*x[6],0),del=sub===0?0:(sub>=499?0:30);
+ document.getElementById("sub").textContent=sub;document.getElementById("delivery").textContent=del;document.getElementById("total").textContent=sub+del;
+}
+function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
+function placeOrder(){
+ if(!cart.length)return alert("Please add products to your cart.");
+ let n=document.getElementById("name").value.trim(),ph=document.getElementById("phone").value.trim(),pin=document.getElementById("pincode").value.trim(),ad=document.getElementById("address").value.trim(),pay=document.getElementById("payment").value;
+ if(!n||!ph||!pin||!ad)return alert("Please fill all delivery details.");
+ let msg=`Hello HR Greenz!%0A%0A*New Order*%0AName: ${encodeURIComponent(n)}%0AMobile: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(ad)}%0APayment: ${encodeURIComponent(pay)}%0A%0A*Items:*%0A`;
+ cart.forEach(x=>msg+=`${encodeURIComponent(x[0])} × ${x[6]} = ₹${x[1]*x[6]}%0A`);
+ msg+=`%0A*Total: ₹${document.getElementById("total").textContent}*`;
+ const whatsappNumber="919324584783";
+ window.open(`https://wa.me/${whatsappNumber}?text=${msg}`,"_blank");
+}
+render();update();
+</script>
+</body>
+</html>
