@@ -106,7 +106,10 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
    <input id="phone" placeholder="Mobile Number">
    <input id="pincode" placeholder="Pincode">
    <textarea id="address" placeholder="Complete Delivery Address"></textarea>
-   <select id="payment"><option>Cash on Delivery</option><option>UPI / Online Payment</option></select>
+  <select id="payment">
+  <option value="upi" selected>UPI / Online Payment</option>
+  <option value="cod">Cash on Delivery</option>
+</select>
    <button class="btn" style="width:100%;margin-top:5px" onclick="placeOrder()">Place Order on WhatsApp 📲</button>
   </div>
  </div>
@@ -146,21 +149,43 @@ function update(){
 }
 function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
 function placeOrder(){
+
   if(!cart.length)
     return alert("Please add products to your cart.");
 
   let n=document.getElementById("name").value.trim(),
       ph=document.getElementById("phone").value.trim(),
       pin=document.getElementById("pincode").value.trim(),
-      ad=document.getElementById("address").value.trim();
+      ad=document.getElementById("address").value.trim(),
+      payment=document.getElementById("payment").value;
 
   if(!n||!ph||!pin||!ad)
     return alert("Please fill all delivery details.");
-  document.getElementById("paymentQR").style.display="block";
 
   let total=document.getElementById("total").textContent;
-  
-  let msg=`Hello HR Greenz!%0A%0A*New Order*%0AName: ${encodeURIComponent(n)}%0AMobile: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(ad)}%0APayment: PhonePe QR%0A%0A`;
+
+  if(payment==="upi"){
+    document.getElementById("qrAmount").textContent=total.replace("₹","");
+    document.getElementById("paymentQR").style.display="block";
+    return;
+  }
+
+  sendWhatsAppOrder("Cash on Delivery");
+}
+
+function paymentDone(){
+  sendWhatsAppOrder("UPI / Online Payment");
+}
+
+function sendWhatsAppOrder(paymentMethod){
+
+  let n=document.getElementById("name").value.trim(),
+      ph=document.getElementById("phone").value.trim(),
+      pin=document.getElementById("pincode").value.trim(),
+      ad=document.getElementById("address").value.trim(),
+      total=document.getElementById("total").textContent;
+
+  let msg=`Hello HR Greenz!%0A%0A*New Order*%0AName: ${encodeURIComponent(n)}%0AMobile: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(ad)}%0APayment: ${encodeURIComponent(paymentMethod)}%0A%0A`;
 
   cart.forEach(x=>{
     msg+=`${encodeURIComponent(x[0])} x ${x[6]} = ₹${x[1]*x[6]}%0A`;
@@ -170,29 +195,42 @@ function placeOrder(){
 
   const whatsappNumber="919324584783";
 
-  setTimeout(()=>{
-    window.open(`https://wa.me/${whatsappNumber}?text=${msg}`,"_blank");
-  },3000);
+  window.open(
+    `https://wa.me/${whatsappNumber}?text=${msg}`,
+    "_blank"
+  );
+}
 }
 render();update();
 </script>
-    <div id="paymentQR" style="display:none;text-align:center;padding:25px;background:white;border-radius:15px;margin:20px auto;max-width:400px;">
+  <div id="paymentQR" style="display:none;text-align:center;padding:20px;background:#f4faf5;border-radius:15px;margin-top:20px;">
 
-  <h2>💳 PhonePe Payment</h2>
+  <h2 style="color:#138a36;">💳 UPI Payment</h2>
 
-  <p>Scan the QR code and make the payment.</p>
+  <p>Scan this QR code and pay</p>
 
+  <div style="font-size:24px;font-weight:bold;margin:12px 0;color:#138a36;">
+    ₹<span id="qrAmount">0</span>
+  </div>
 
   <img src="phonepe-qr.jpeg"
-       alt="PhonePe Payment QR"
+       alt="UPI Payment QR"
        style="width:280px;max-width:100%;border-radius:10px;">
 
-  <p><b>After payment, your order details will be sent on WhatsApp.</b></p>
+  <p style="margin:12px 0;color:#555;">
+    After completing the payment, click the button below.
+  </p>
+
+  <button onclick="paymentDone()"
+          style="width:100%;padding:13px;background:#138a36;color:white;border:0;border-radius:8px;font-weight:bold;cursor:pointer;">
+    ✅ Payment Done – Send Order on WhatsApp
+  </button>
 
   <button onclick="closeQR()"
-          style="padding:12px 20px;background:#138a36;color:white;border:0;border-radius:8px;cursor:pointer;">
-    Close
+          style="width:100%;padding:11px;margin-top:8px;background:#fff;color:#138a36;border:1px solid #138a36;border-radius:8px;cursor:pointer;">
+    Cancel
   </button>
+
 </div>
 
 <script>
