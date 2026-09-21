@@ -200,8 +200,10 @@ function update(){
 function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
 async function placeOrder(){
 
-  if(!cart.length)
-    return alert("Please add products to your cart.");
+  if(!cart.length){
+    alert("Please add products to your cart.");
+    return;
+  }
 
   let n = document.getElementById("name").value.trim();
   let ph = document.getElementById("phone").value.trim();
@@ -209,48 +211,56 @@ async function placeOrder(){
   let ad = document.getElementById("address").value.trim();
   let payment = document.getElementById("payment").value;
 
-  if(!n || !ph || !pin || !ad)
-    return alert("Please fill all delivery details.");
+  if(!n || !ph || !pin || !ad){
+    alert("Please fill all delivery details.");
+    return;
+  }
 
   let sub = cart.reduce((a,x) => a + x[1] * x[6], 0);
   let del = sub === 0 ? 0 : (sub >= 499 ? 0 : 30);
   let total = sub + del;
 
-  // Save order in Supabase
+  // Create Order ID
   const orderId = crypto.randomUUID();
 
-const { error: orderError } = await supabaseClient
-  .from("orders")
-  .insert({
-    id: orderId,
-    customer_name: n,
-    customer_phone: ph,
-    delivery_address: ad,
-    pincode: pin,
-    payment_method: payment === "upi" ? "UPI / Online Payment" : "Cash on Delivery",
-    total: total,
-    status: "pending"
-  });
+  // Save order
+  const { error: orderError } = await supabaseClient
+    .from("orders")
+    .insert({
+      id: orderId,
+      customer_name: n,
+      customer_phone: ph,
+      delivery_address: ad,
+      pincode: pin,
+      payment_method: payment === "upi"
+        ? "UPI / Online Payment"
+        : "Cash on Delivery",
+      total: total,
+      status: "pending"
+    });
 
-if(itemsError){
-  console.error("Order Items Error:", itemsError);
-  alert("ERROR: " + (itemsError.message || JSON.stringify(itemsError)));
-  return;
-}
-  // Save purchased products in order_items
- const items = cart.map(x => ({
-  order_id: orderId,
-  product_name: x[0],
-  price: x[1],
-  quantity: x[6]
-}));
+  if(orderError){
+    console.error("Order Error:", orderError);
+    alert("Order save nahi hua: " + orderError.message);
+    return;
+  }
+
+  // Prepare order items
+  const items = cart.map(x => ({
+    order_id: orderId,
+    product_name: x[0],
+    price: x[1],
+    quantity: x[6]
+  }));
+
+  // Save order items
   const { error: itemsError } = await supabaseClient
     .from("order_items")
     .insert(items);
 
   if(itemsError){
     console.error("Order Items Error:", itemsError);
-    alert("Order bana hai, lekin products save nahi hue.");
+    alert("Products save nahi hue: " + itemsError.message);
     return;
   }
 
@@ -264,7 +274,6 @@ if(itemsError){
   // COD
   sendWhatsAppOrder("Cash on Delivery");
 }
-
 function paymentDone(){
   sendWhatsAppOrder("UPI / Online Payment");
 }
