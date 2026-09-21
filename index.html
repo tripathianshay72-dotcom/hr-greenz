@@ -198,28 +198,72 @@ function update(){
  document.getElementById("sub").textContent=sub;document.getElementById("delivery").textContent=del;document.getElementById("total").textContent=sub+del;
 }
 function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
-function placeOrder(){
+async function placeOrder(){
 
   if(!cart.length)
     return alert("Please add products to your cart.");
 
-  let n=document.getElementById("name").value.trim(),
-      ph=document.getElementById("phone").value.trim(),
-      pin=document.getElementById("pincode").value.trim(),
-      ad=document.getElementById("address").value.trim(),
-      payment=document.getElementById("payment").value;
+  let n = document.getElementById("name").value.trim();
+  let ph = document.getElementById("phone").value.trim();
+  let pin = document.getElementById("pincode").value.trim();
+  let ad = document.getElementById("address").value.trim();
+  let payment = document.getElementById("payment").value;
 
-  if(!n||!ph||!pin||!ad)
+  if(!n || !ph || !pin || !ad)
     return alert("Please fill all delivery details.");
 
-  let total=document.getElementById("total").textContent;
+  let sub = cart.reduce((a,x) => a + x[1] * x[6], 0);
+  let del = sub === 0 ? 0 : (sub >= 499 ? 0 : 30);
+  let total = sub + del;
 
-  if(payment==="upi"){
-    document.getElementById("qrAmount").textContent=total.replace("₹","");
-    document.getElementById("paymentQR").style.display="block";
+  // Save order in Supabase
+  const { data: order, error: orderError } = await supabaseClient
+    .from("orders")
+    .insert({
+      customer_name: n,
+      customer_phone: ph,
+      delivery_address: ad,
+      pincode: pin,
+      payment_method: payment === "upi" ? "UPI / Online Payment" : "Cash on Delivery",
+      total: total,
+      status: "pending"
+    })
+    .select()
+    .single();
+
+  if(orderError){
+    console.error("Order Error:", orderError);
+    alert("Order save nahi hua. Please try again.");
     return;
   }
 
+  // Save purchased products in order_items
+  const items = cart.map(x => ({
+    order_id: order.id,
+    product_id: null,
+    product_name: x[0],
+    price: x[1],
+    quantity: x[6]
+  }));
+
+  const { error: itemsError } = await supabaseClient
+    .from("order_items")
+    .insert(items);
+
+  if(itemsError){
+    console.error("Order Items Error:", itemsError);
+    alert("Order bana hai, lekin products save nahi hue.");
+    return;
+  }
+
+  // UPI payment
+  if(payment === "upi"){
+    document.getElementById("qrAmount").textContent = total;
+    document.getElementById("paymentQR").style.display = "block";
+    return;
+  }
+
+  // COD
   sendWhatsAppOrder("Cash on Delivery");
 }
 
