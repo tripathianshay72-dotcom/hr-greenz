@@ -114,22 +114,72 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
   </div>
  </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const products=[
-["Fresh Apples",120,"kg","🍎","fruit","20% OFF",4.7],
-["Banana",50,"dozen","🍌","fruit","10% OFF",4.6],
-["Mango",100,"kg","🥭","seasonal","25% OFF",4.8],
-["Orange",90,"kg","🍊","fruit","15% OFF",4.5],
-["Broccoli",80,"kg","🥦","vegetable","10% OFF",4.7],
-["Carrot",50,"kg","🥕","vegetable","5% OFF",4.6],
-["Tomato",40,"kg","🍅","daily","10% OFF",4.5],
-["Potato",35,"kg","🥔","daily","5% OFF",4.4],
-["Spinach",30,"bunch","🥬","leafy","10% OFF",4.6],
-["Cucumber",45,"kg","🥒","vegetable","10% OFF",4.5],
-["Papaya",70,"kg","🍈","seasonal","15% OFF",4.4],
-["Grapes",110,"kg","🍇","fruit","12% OFF",4.7]
-];
+let products=[];
+  const SUPABASE_URL = "https://uzrpdklhgturazhhshgs.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Pca0bs-RQz053ubHVYqHXw_nS4nu-EI";
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+const emojiMap = {
+  "Fresh Apples": "🍎",
+  "Banana": "🍌",
+  "Mango": "🥭",
+  "Orange": "🍊",
+  "Broccoli": "🥦",
+  "Carrot": "🥕",
+  "Tomato": "🍅",
+  "Potato": "🥔",
+  "Spinach": "🥬",
+  "Cucumber": "🥒",
+  "Papaya": "🍈",
+  "Grapes": "🍇"
+};
+
+const offerMap = {
+  "Fresh Apples": "20% OFF",
+  "Banana": "10% OFF",
+  "Mango": "25% OFF",
+  "Orange": "15% OFF",
+  "Broccoli": "10% OFF",
+  "Carrot": "5% OFF",
+  "Tomato": "10% OFF",
+  "Potato": "5% OFF",
+  "Spinach": "10% OFF",
+  "Cucumber": "10% OFF",
+  "Papaya": "15% OFF",
+  "Grapes": "12% OFF"
+};
+
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("id,name,category,price,unit,stock")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Supabase Error:", error);
+    document.getElementById("grid").innerHTML =
+      '<div class="empty">Products load nahi ho rahe.</div>';
+    return;
+  }
+
+  products = data.map(p => [
+    p.name,
+    Number(p.price),
+    p.unit || "kg",
+    emojiMap[p.name] || "🥬",
+    p.category || "all",
+    offerMap[p.name] || "",
+    4.5
+  ]);
+
+  render();
+}
 let cat="all",cart=[];
 
 function setCat(c){cat=c;document.getElementById("products").scrollIntoView({behavior:"smooth"});render()}
@@ -201,7 +251,7 @@ function sendWhatsAppOrder(paymentMethod){
   );
 }
   
-render();update();
+loadProducts();update();
 </script>
   <div id="paymentQR" style="display:none;text-align:center;padding:20px;background:#f4faf5;border-radius:15px;margin-top:20px;">
 
