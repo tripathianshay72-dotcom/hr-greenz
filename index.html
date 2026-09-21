@@ -239,14 +239,12 @@ const { error: orderError } = await supabaseClient
   }
 
   // Save purchased products in order_items
-  const items = cart.map(x => ({
-    order_id: orderId,
-    product_id: null,
-    product_name: x[0],
-    price: x[1],
-    quantity: x[6]
-  }));
-
+ const items = cart.map(x => ({
+  order_id: orderId,
+  product_name: x[0],
+  price: x[1],
+  quantity: x[6]
+}));
   const { error: itemsError } = await supabaseClient
     .from("order_items")
     .insert(items);
