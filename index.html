@@ -234,10 +234,9 @@ const { error: orderError } = await supabaseClient
 
 if(itemsError){
   console.error("Order Items Error:", itemsError);
-  alert("ERROR: " + JSON.stringify(itemsError));
+  alert("ERROR: " + (itemsError.message || JSON.stringify(itemsError)));
   return;
 }
-
   // Save purchased products in order_items
  const items = cart.map(x => ({
   order_id: orderId,
