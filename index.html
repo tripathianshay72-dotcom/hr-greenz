@@ -189,9 +189,85 @@ function render(){
  document.getElementById("resultText").textContent=(cat==="all"?"All Products":cat[0].toUpperCase()+cat.slice(1))+" • "+list.length+" items";
  document.getElementById("grid").innerHTML=list.map(p=>`<div class="product"><span class="tag">${p[5]}</span><div class="pic">${p[3]}</div><h3>${p[0]}</h3><div class="rating">⭐ ${p[6]} • Fresh</div><div class="price"><strong>₹${p[1]}</strong> / ${p[2]}</div><button class="add" onclick="add('${p[0]}')">Add to Cart</button></div>`).join("")||'<div class="empty">No matching products found.</div>';
 }
-function add(name){let p=products.find(x=>x[0]===name),i=cart.find(x=>x[0]===name);i?i[6]++:cart.push([...p,1]);update()}
-function change(name,d){let i=cart.findIndex(x=>x[0]===name);if(i<0)return;cart[i][6]+=d;if(cart[i][6]<=0)cart.splice(i,1);update()}
+function add(name){
+
+  let p = products.find(x => x[0] === name);
+
+  if(!p) return;
+
+  let existing = cart.find(x => x.product_id === p[0]);
+
+  if(existing){
+    existing.quantity++;
+  }else{
+    cart.push({
+      product_id: p[0],
+      product_name: p[0],
+      price: Number(p[1]),
+      unit: p[2],
+      emoji: p[3],
+      quantity: 1
+    });
+  }
+
+  update();
+}
+
+function change(name,d){
+
+  let item = cart.find(x => x.product_id === name);
+
+  if(!item) return;
+
+  item.quantity += d;
+
+  if(item.quantity <= 0){
+    cart = cart.filter(x => x.product_id !== name);
+  }
+
+  update();
+}
+
 function update(){
+
+  document.getElementById("count").textContent =
+    cart.reduce((a,x) => a + x.quantity, 0);
+
+  document.getElementById("cartItems").innerHTML =
+    cart.length
+    ? cart.map(x => `
+      <div class="cart-row">
+
+        <span>
+          ${x.emoji}
+          <b>${x.product_name}</b>
+          <br>
+          <small>₹${x.price} / ${x.unit}</small>
+        </span>
+
+        <span class="qty">
+          <button onclick="change('${x.product_id}',-1)">−</button>
+          ${x.quantity}
+          <button onclick="change('${x.product_id}',1)">+</button>
+        </span>
+
+        <b>₹${x.price * x.quantity}</b>
+
+      </div>
+    `).join("")
+    : '<div class="empty">Your cart is empty. Add some fresh products!</div>';
+
+  let sub = cart.reduce(
+    (a,x) => a + (x.price * x.quantity),
+    0
+  );
+
+  let del = sub === 0 ? 0 : (sub >= 499 ? 0 : 30);
+
+  document.getElementById("sub").textContent = sub;
+  document.getElementById("delivery").textContent = del;
+  document.getElementById("total").textContent = sub + del;
+}
  document.getElementById("count").textContent=cart.reduce((a,x)=>a+x[6],0);
  document.getElementById("cartItems").innerHTML=cart.length?cart.map(x=>`<div class="cart-row"><span>${x[3]} <b>${x[0]}</b><br><small>₹${x[1]} / ${x[2]}</small></span><span class="qty"><button onclick="change('${x[0]}',-1)">−</button> ${x[6]} <button onclick="change('${x[0]}',1)">+</button></span><b>₹${x[1]*x[6]}</b></div>`).join(""):'<div class="empty">Your cart is empty. Add some fresh products!</div>';
  let sub=cart.reduce((a,x)=>a+x[1]*x[6],0),del=sub===0?0:(sub>=499?0:30);
@@ -200,74 +276,91 @@ function update(){
 function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
 async function placeOrder(){
 
-  if(!cart.length){
-    alert("Please add products to your cart.");
+  if(cart.length === 0){
+    alert("Cart empty hai.");
     return;
   }
 
-  let n = document.getElementById("name").value.trim();
-  let ph = document.getElementById("phone").value.trim();
-  let pin = document.getElementById("pincode").value.trim();
-  let ad = document.getElementById("address").value.trim();
-  let payment = document.getElementById("payment").value;
+  const n = document.getElementById("name").value.trim();
+  const ph = document.getElementById("phone").value.trim();
+  const pin = document.getElementById("pincode").value.trim();
+  const ad = document.getElementById("address").value.trim();
+  const payment = document.getElementById("payment").value;
 
   if(!n || !ph || !pin || !ad){
     alert("Please fill all delivery details.");
     return;
   }
 
-  let sub = cart.reduce((a,x) => a + x[1] * x[6], 0);
-  let del = sub === 0 ? 0 : (sub >= 499 ? 0 : 30);
-  let total = sub + del;
+  const sub = cart.reduce(
+    (sum, item) => sum + (item.price * item.quantity), 0
+  );
 
-  // Create Order ID
-  const orderId = crypto.randomUUID();
+  const delivery = sub >= 499 ? 0 : 30;
+  const total = sub + delivery;
 
-  // Save order
-  const { error: orderError } = await supabaseClient
-    .from("orders")
-    .insert({
-      id: orderId,
-      customer_name: n,
-      customer_phone: ph,
-      delivery_address: ad,
-      pincode: pin,
-      payment_method: payment === "upi"
-        ? "UPI / Online Payment"
-        : "Cash on Delivery",
-      total: total,
-      status: "pending"
-    });
+  // SAVE ORDER
+  const { data: order, error: orderError } =
+    await supabaseClient
+      .from("orders")
+      .insert({
+        customer_name: n,
+        customer_phone: ph,
+        delivery_address: ad,
+        pincode: pin,
+        payment_method: payment === "upi"
+          ? "UPI / Online Payment"
+          : "Cash on Delivery",
+        total: total,
+        status: "pending"
+      })
+      .select("id")
+      .single();
 
   if(orderError){
-    console.error("Order Error:", orderError);
-    alert("Order save nahi hua: " + orderError.message);
+
+    console.error("ORDER ERROR:", orderError);
+
+    alert(
+      "ORDER ERROR:\n" +
+      orderError.message
+    );
+
     return;
   }
 
-  // Prepare order items
-  const items = cart.map(x => ({
-    order_id: orderId,
-    product_name: x[0],
-    price: x[1],
-    quantity: x[6]
+  // SAVE PRODUCTS
+  const items = cart.map(item => ({
+    order_id: order.id,
+    product_name: item.product_name,
+    price: item.price,
+    quantity: item.quantity
   }));
 
-  // Save order items
-  const { error: itemsError } = await supabaseClient
-    .from("order_items")
-    .insert(items);
+  const { error: itemsError } =
+    await supabaseClient
+      .from("order_items")
+      .insert(items);
 
   if(itemsError){
-    console.error("Order Items Error:", itemsError);
-    alert("Products save nahi hue: " + itemsError.message);
+
+    console.error("ITEM ERROR:", itemsError);
+
+    alert(
+      "ORDER SAVED BUT PRODUCTS ERROR:\n" +
+      itemsError.message
+    );
+
     return;
   }
 
-  // UPI payment
+  // UPI
   if(payment === "upi"){
+
     document.getElementById("qrAmount").textContent = total;
+
     document.getElementById("paymentQR").style.display = "block";
+
     return;
   }
 
