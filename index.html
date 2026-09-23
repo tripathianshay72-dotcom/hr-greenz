@@ -291,7 +291,7 @@ async function placeOrder(){
     (sum, item) => sum + (item.price * item.quantity), 0
   );
 
-  const delivery = sub >= 499 ? 0 : 30;
+  const delivery =  0;
   const total = sub + delivery;
 
   const orderId = crypto.randomUUID();
