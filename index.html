@@ -169,14 +169,14 @@ async function loadProducts() {
   }
 
   products = data.map(p => [
-    p.name,
-    Number(p.price),
-    p.unit || "kg",
-    emojiMap[p.name] || "🥬",
-    p.category || "all",
-    offerMap[p.name] || "",
-    1
-  ]);
+  p.name,
+  Number(p.price),
+  p.unit || "kg",
+  emojiMap[p.name] || "🥬",
+  p.category || "all",
+  offerMap[p.name] || "",
+  4.5
+]);
 
   render();
 }
@@ -268,11 +268,6 @@ function update(){
   document.getElementById("delivery").textContent = del;
   document.getElementById("total").textContent = sub + del;
 }
- document.getElementById("count").textContent=cart.reduce((a,x)=>a+x[6],0);
- document.getElementById("cartItems").innerHTML=cart.length?cart.map(x=>`<div class="cart-row"><span>${x[3]} <b>${x[0]}</b><br><small>₹${x[1]} / ${x[2]}</small></span><span class="qty"><button onclick="change('${x[0]}',-1)">−</button> ${x[6]} <button onclick="change('${x[0]}',1)">+</button></span><b>₹${x[1]*x[6]}</b></div>`).join(""):'<div class="empty">Your cart is empty. Add some fresh products!</div>';
- let sub=cart.reduce((a,x)=>a+x[1]*x[6],0),del=sub===0?0:(sub>=499?0:30);
- document.getElementById("sub").textContent=sub;document.getElementById("delivery").textContent=del;document.getElementById("total").textContent=sub+del;
-}
 function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
 async function placeOrder(){
 
@@ -299,76 +294,53 @@ async function placeOrder(){
   const delivery = sub >= 499 ? 0 : 30;
   const total = sub + delivery;
 
-  // SAVE ORDER
-  const { data: order, error: orderError } =
-    await supabaseClient
-      .from("orders")
-      .insert({
-        customer_name: n,
-        customer_phone: ph,
-        delivery_address: ad,
-        pincode: pin,
-        payment_method: payment === "upi"
-          ? "UPI / Online Payment"
-          : "Cash on Delivery",
-        total: total,
-        status: "pending"
-      })
-      .select("id")
-      .single();
+  const orderId = crypto.randomUUID();
+
+  const { error: orderError } = await supabaseClient
+    .from("orders")
+    .insert({
+      id: orderId,
+      customer_name: n,
+      customer_phone: ph,
+      delivery_address: ad,
+      pincode: pin,
+      payment_method: payment === "upi"
+        ? "UPI / Online Payment"
+        : "Cash on Delivery",
+      total: total,
+      status: "pending"
+    });
 
   if(orderError){
-
     console.error("ORDER ERROR:", orderError);
-
-    alert(
-      "ORDER ERROR:\n" +
-      orderError.message
-    );
-
+    alert("ORDER ERROR:\n" + orderError.message);
     return;
   }
 
-  // SAVE PRODUCTS
   const items = cart.map(item => ({
-    order_id: order.id,
+    order_id: orderId,
     product_name: item.product_name,
     price: item.price,
     quantity: item.quantity
   }));
 
-  const { error: itemsError } =
-    await supabaseClient
-      .from("order_items")
-      .insert(items);
+  const { error: itemsError } = await supabaseClient
+    .from("order_items")
+    .insert(items);
 
   if(itemsError){
-
     console.error("ITEM ERROR:", itemsError);
-
-    alert(
-      "ORDER SAVED BUT PRODUCTS ERROR:\n" +
-      itemsError.message
-    );
-
+    alert("ORDER SAVED BUT PRODUCTS ERROR:\n" + itemsError.message);
     return;
   }
 
-  // UPI
   if(payment === "upi"){
-
     document.getElementById("qrAmount").textContent = total;
-
     document.getElementById("paymentQR").style.display = "block";
-
     return;
   }
 
-  // COD
   sendWhatsAppOrder("Cash on Delivery");
-}
-function paymentDone(){
-  sendWhatsAppOrder("UPI / Online Payment");
 }
 
 function sendWhatsAppOrder(paymentMethod){
@@ -382,9 +354,8 @@ function sendWhatsAppOrder(paymentMethod){
   let msg=`Hello HR Greenz!%0A%0A*New Order*%0AName: ${encodeURIComponent(n)}%0AMobile: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(ad)}%0APayment: ${encodeURIComponent(paymentMethod)}%0A%0A`;
 
   cart.forEach(x=>{
-    msg+=`${encodeURIComponent(x[0])} x ${x[6]} = ₹${x[1]*x[6]}%0A`;
-  });
-
+  msg += `${encodeURIComponent(x.product_name)} x ${x.quantity} = ₹${x.price * x.quantity}%0A`;
+});
   msg+=`%0A*Total: ${encodeURIComponent(total)}*`;
 
   const whatsappNumber="919324584783";
