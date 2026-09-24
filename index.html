@@ -22,7 +22,22 @@ nav{display:flex;gap:16px}nav a{text-decoration:none;color:#333;font-weight:600}
 .categories{display:grid;grid-template-columns:repeat(6,1fr);gap:15px}.cat{background:#fff;border:1px solid #e8eee9;border-radius:15px;padding:20px 10px;text-align:center;cursor:pointer;transition:.2s}.cat:hover{transform:translateY(-3px);box-shadow:0 7px 18px #00000012}.cat .emoji{font-size:42px}.cat h3{font-size:15px;margin-top:8px}
 .offer{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.offer-card{padding:25px;border-radius:18px;min-height:150px;background:#e9f9ec}.offer-card:nth-child(2){background:#fff3cc}.offer-card:nth-child(3){background:#eaf4ff}.offer-card h3{font-size:23px;margin:7px 0}.offer-card p{color:#555;line-height:1.5}.offer-card button{margin-top:14px;border:0;background:var(--g);color:#fff;padding:9px 16px;border-radius:20px;cursor:pointer}
 .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:10px}.toolbar select{padding:10px 14px;border:1px solid #ddd;border-radius:9px;background:#fff}
-.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.product{background:#fff;border:1px solid #e5ebe6;border-radius:16px;padding:16px;position:relative}.pic{height:145px;border-radius:12px;background:#f2faf3;display:flex;align-items:center;justify-content:center;font-size:75px}.tag{position:absolute;top:25px;left:25px;background:#e33;color:#fff;padding:5px 8px;border-radius:6px;font-size:12px;font-weight:bold}.product h3{margin:13px 0 7px}.rating{font-size:13px;color:#e09a00}.price{margin:9px 0}.price strong{font-size:19px;color:var(--g)}.old{text-decoration:line-through;color:#999;font-size:13px;margin-left:5px}.add{width:100%;padding:10px;border:1px solid var(--g);background:#fff;color:var(--g);border-radius:9px;font-weight:bold;cursor:pointer}.add:hover{background:var(--g);color:#fff}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.product{background:#fff;border:1px solid #e5ebe6;border-radius:16px;padding:16px;position:relative}..pic{
+  height:180px;
+  border-radius:12px;
+  background:#f2faf3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.pic img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}.tag{position:absolute;top:25px;left:25px;background:#e33;color:#fff;padding:5px 8px;border-radius:6px;font-size:12px;font-weight:bold}.product h3{margin:13px 0 7px}.rating{font-size:13px;color:#e09a00}.price{margin:9px 0}.price strong{font-size:19px;color:var(--g)}.old{text-decoration:line-through;color:#999;font-size:13px;margin-left:5px}.add{width:100%;padding:10px;border:1px solid var(--g);background:#fff;color:var(--g);border-radius:9px;font-weight:bold;cursor:pointer}.add:hover{background:var(--g);color:#fff}
 .about{background:var(--light);padding:55px 15%;text-align:center}.about h2{color:var(--g);margin-bottom:13px}.about p{line-height:1.8;color:#555}
 footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-columns:2fr 1fr 1fr;gap:25px}footer h3{margin-bottom:10px}footer p,footer a{color:#dcebdd;line-height:1.8;text-decoration:none}
 .modal{display:none;position:fixed;inset:0;background:#0008;z-index:100;align-items:center;justify-content:center;padding:18px}.box{background:#fff;border-radius:18px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:25px}.close{float:right;border:0;background:none;font-size:26px;cursor:pointer}.box h2{color:var(--g);margin-bottom:16px}.cart-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:12px 0}.qty button{width:27px;height:27px;border:0;background:var(--g);color:#fff;border-radius:50%;cursor:pointer}.summary{background:#f4f8f4;padding:15px;border-radius:10px;margin:16px 0;line-height:1.9}.form input,.form textarea,.form select{width:100%;padding:12px;margin:6px 0 10px;border:1px solid #d8e0d9;border-radius:8px}.form textarea{height:80px}.empty{text-align:center;padding:25px;color:#777}
@@ -125,20 +140,57 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
-const emojiMap = {
-  "Fresh Apples": "🍎",
-  "Banana": "🍌",
-  "Mango": "🥭",
-  "Orange": "🍊",
-  "Broccoli": "🥦",
-  "Carrot": "🥕",
-  "Tomato": "🍅",
-  "Potato": "🥔",
-  "Spinach": "🥬",
-  "Cucumber": "🥒",
-  "Papaya": "🍈",
-  "Grapes": "🍇"
+const imageSearchMap = {
+  "Fresh Apples": "apple fruit",
+  "Banana": "banana fruit",
+  "Mango": "mango fruit",
+  "Orange": "orange fruit",
+  "Broccoli": "fresh broccoli",
+  "Carrot": "fresh carrots",
+  "Tomato": "fresh tomatoes",
+  "Potato": "fresh potatoes",
+  "Spinach": "fresh spinach",
+  "Cucumber": "fresh cucumber",
+  "Papaya": "papaya fruit",
+  "Grapes": "fresh grapes",
+
+  "Guava": "guava fruit",
+  "Pomegranate": "pomegranate fruit",
+  "Watermelon": "watermelon fruit",
+  "Muskmelon": "muskmelon fruit",
+  "Pineapple": "pineapple fruit",
+  "Lemon": "fresh lemons",
+
+  "Onion": "fresh onions",
+  "Cauliflower": "cauliflower vegetable",
+  "Cabbage": "fresh cabbage",
+  "Brinjal": "brinjal eggplant",
+  "Lady Finger": "okra vegetable",
+  "Green Peas": "green peas vegetable",
+  "Capsicum": "green capsicum",
+  "Ginger": "fresh ginger",
+  "Garlic": "fresh garlic",
+  "Radish": "fresh radish",
+  "Beetroot": "fresh beetroot",
+  "Bottle Gourd": "bottle gourd",
+  "Bitter Gourd": "bitter gourd",
+  "Pumpkin": "pumpkin vegetable",
+  "Green Chilli": "green chilli",
+
+  "Coriander": "fresh coriander",
+  "Mint": "fresh mint leaves",
+  "Fenugreek Leaves": "fenugreek leaves",
+  "Curry Leaves": "curry leaves"
 };
+
+function getProductImage(name) {
+  const search = imageSearchMap[name] || name + " fresh vegetable";
+
+  return "https://loremflickr.com/600/450/" +
+    encodeURIComponent(search) +
+    "?lock=" +
+    encodeURIComponent(name);
+}
 
 const offerMap = {
   "Fresh Apples": "20% OFF",
@@ -172,7 +224,7 @@ async function loadProducts() {
   p.name,
   Number(p.price),
   p.unit || "kg",
-  emojiMap[p.name] || "🥬",
+  getProductImage(p.name),
   p.category || "all",
   offerMap[p.name] || "",
   4.5
@@ -187,7 +239,14 @@ function render(){
  let q=document.getElementById("search").value.toLowerCase(),list=products.filter(p=>(cat==="all"||p[4]===cat)&&p[0].toLowerCase().includes(q));
  let s=document.getElementById("sort").value;if(s==="low")list.sort((a,b)=>a[1]-b[1]);if(s==="high")list.sort((a,b)=>b[1]-a[1]);
  document.getElementById("resultText").textContent=(cat==="all"?"All Products":cat[0].toUpperCase()+cat.slice(1))+" • "+list.length+" items";
- document.getElementById("grid").innerHTML=list.map(p=>`<div class="product"><span class="tag">${p[5]}</span><div class="pic">${p[3]}</div><h3>${p[0]}</h3><div class="rating">⭐ ${p[6]} • Fresh</div><div class="price"><strong>₹${p[1]}</strong> / ${p[2]}</div><button class="add" onclick="add('${p[0]}')">Add to Cart</button></div>`).join("")||'<div class="empty">No matching products found.</div>';
+ document.getElementById("grid").innerHTML=list.map(p=>`<div class="product"><span class="tag">${p[5]}</span><div class="pic">
+  <img
+    src="${p[3]}"
+    alt="${p[0]}"
+    loading="lazy"
+    onerror="this.src='https://loremflickr.com/600/450/vegetable?lock=999';"
+  >
+</div><h3>${p[0]}</h3><div class="rating">⭐ ${p[6]} • Fresh</div><div class="price"><strong>₹${p[1]}</strong> / ${p[2]}</div><button class="add" onclick="add('${p[0]}')">Add to Cart</button></div>`).join("")||'<div class="empty">No matching products found.</div>';
 }
 function add(name){
 
