@@ -599,23 +599,6 @@ async function updateAuthButton(){
   }
 }
 
-  const { data } = await supabaseClient.auth.getUser();
-
-  const button = document.querySelector("nav .auth-btn");
-  const profileButton = document.getElementById("profileButton");
-
-  if(!button || !profileButton) return;
-
-  if(data.user){
-    button.textContent = "Logout";
-    button.onclick = logoutUser;
-    profileButton.style.display = "inline-block";
-  }else{
-    button.textContent = "Login / Sign Up";
-    button.onclick = openAuth;
-    profileButton.style.display = "none";
-  }
-}
 
 // AUTO UPDATE LOGIN AND PROFILE BUTTON
 supabaseClient.auth.onAuthStateChange((_event, session) => {
