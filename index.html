@@ -286,6 +286,15 @@ onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
       >
         Login
       </button>
+      
+<button
+  type="button"
+  id="forgotPasswordBtn"
+  onclick="sendPasswordReset()"
+  style="display:block;width:100%;margin-top:12px;border:0;background:none;color:#138a36;font-weight:bold;cursor:pointer;"
+>
+  Forgot Password?
+</button>
 
       <p style="text-align:center;margin-top:15px;">
         <span id="authSwitchText">
@@ -385,6 +394,37 @@ const supabaseClient = window.supabase.createClient(
 // ===============================
 
 let authMode = "login";
+  
+// ===== FORGOT PASSWORD =====
+
+async function sendPasswordReset(){
+
+  const email = document.getElementById("authEmail").value.trim();
+  const message = document.getElementById("authMessage");
+
+  if(!email){
+    message.style.color = "red";
+    message.textContent = "Please enter your email first.";
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(
+    email,
+    {
+      redirectTo: window.location.origin + window.location.pathname
+    }
+  );
+
+  if(error){
+    console.error(error);
+    message.style.color = "red";
+    message.textContent = error.message;
+    return;
+  }
+
+  message.style.color = "#138a36";
+  message.textContent = "Password reset email sent! Please check your inbox.";
+}
 
 function openAuth(){
   document.getElementById("authModal").style.display = "flex";
