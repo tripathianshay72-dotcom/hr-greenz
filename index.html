@@ -467,15 +467,51 @@ const imageSearchMap = {
   "Curry Leaves": "curry leaves"
 };
 
+const productImages = {
+  "Fresh Apples": "images/fresh-apples.jpg",
+  "Banana": "images/banana.jpg",
+  "Mango": "images/mango.jpg",
+  "Orange": "images/orange.jpg",
+  "Papaya": "images/papaya.jpg",
+  "Grapes": "images/grapes.jpg",
+  "Guava": "images/guava.jpg",
+  "Pomegranate": "images/pomegranate.jpg",
+  "Watermelon": "images/watermelon.jpg",
+  "Muskmelon": "images/muskmelon.jpg",
+  "Pineapple": "images/pineapple.jpg",
+  "Lemon": "images/lemon.jpg",
+
+  "Broccoli": "images/broccoli.jpg",
+  "Carrot": "images/carrot.jpg",
+  "Tomato": "images/tomato.jpg",
+  "Potato": "images/potato.jpg",
+  "Cucumber": "images/cucumber.jpg",
+  "Onion": "images/onion.jpg",
+  "Cauliflower": "images/cauliflower.jpg",
+  "Cabbage": "images/cabbage.jpg",
+  "Brinjal": "images/brinjal.jpg",
+  "Lady Finger": "images/lady-finger.jpg",
+  "Green Peas": "images/green-peas.jpg",
+  "Capsicum": "images/capsicum.jpg",
+  "Ginger": "images/ginger.jpg",
+  "Garlic": "images/garlic.jpg",
+  "Radish": "images/radish.jpg",
+  "Beetroot": "images/beetroot.jpg",
+  "Bottle Gourd": "images/bottle-gourd.jpg",
+  "Bitter Gourd": "images/bitter-gourd.jpg",
+  "Pumpkin": "images/pumpkin.jpg",
+  "Green Chilli": "images/green-chilli.jpg",
+
+  "Spinach": "images/spinach.jpg",
+  "Coriander": "images/coriander.jpg",
+  "Mint": "images/mint.jpg",
+  "Fenugreek Leaves": "images/fenugreek-leaves.jpg",
+  "Curry Leaves": "images/curry-leaves.jpg"
+};
+
 function getProductImage(name) {
-  const search = imageSearchMap[name] || name + " fresh vegetable";
-
-  return "https://loremflickr.com/600/450/" +
-    encodeURIComponent(search) +
-    "?lock=" +
-    encodeURIComponent(name);
+  return productImages[name] || "images/default.jpg";
 }
-
 const offerMap = {
   "Fresh Apples": "20% OFF",
   "Banana": "10% OFF",
