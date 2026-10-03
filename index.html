@@ -1135,7 +1135,91 @@ function initLocationMap(type) {
 
 // USE CURRENT GPS LOCATION
 
-function getCurrentLocation(type) {
+
+async function getCurrentLocation(type) {
+
+  if (!navigator.geolocation) {
+    alert("Your browser does not support location.");
+    return;
+  }
+
+  initLocationMap(type);
+
+  const infoId = type === "profile"
+    ? "profileMapInfo"
+    : "deliveryMapInfo";
+
+  const addressId = type === "profile"
+    ? "profileAddress"
+    : "address";
+
+  document.getElementById(infoId).textContent =
+    "Detecting your location...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    async function (position) {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      const location = [lat, lng];
+
+      locationMaps[type].setView(location, 17);
+      locationMarkers[type].setLatLng(location);
+
+      document.getElementById(infoId).textContent =
+        "Location detected. Getting address...";
+
+      try {
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Address service unavailable");
+        }
+
+        const result = await response.json();
+
+        if (result.display_name) {
+
+          document.getElementById(addressId).value =
+            result.display_name;
+
+          document.getElementById(infoId).textContent =
+            "✓ Location and address filled successfully.";
+
+        } else {
+
+          document.getElementById(infoId).textContent =
+            "Address nahi mila. Please manually enter address.";
+        }
+
+      } catch (error) {
+
+        console.error("ADDRESS ERROR:", error);
+
+        document.getElementById(infoId).textContent =
+          "Address nahi mil paya. Manually enter address.";
+      }
+    },
+
+    function (error) {
+
+      alert("Location permission allow karo.");
+
+      document.getElementById(infoId).textContent =
+        "Location detect nahi hui.";
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000
+    }
+  );
+}
 
   if (!navigator.geolocation) {
     alert("Your browser does not support location.");
