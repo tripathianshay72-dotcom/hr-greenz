@@ -55,7 +55,55 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
 .auth-btn:hover{
   background:#0b6b29;
 }
+  
+/* HR GREENZ LOCATION MAP */
+.location-map-box {
+  width: 100%;
+  margin-top: 12px;
+}
+
+#deliveryMap,
+#profileMap {
+  width: 100%;
+  height: 320px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+.location-map-btn {
+  background: #138a36;
+  color: white;
+  border: none;
+  padding: 11px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 6px 4px 6px 0;
+  font-weight: bold;
+}
+
+.location-map-btn:hover {
+  background: #0d6b29;
+}
+
+.location-map-info {
+  font-size: 13px;
+  color: #555;
+  margin-top: 8px;
+}
 </style>
+  
+<!-- Leaflet Map CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<!-- Leaflet Map JavaScript -->
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  defer>
+</script>
 </head>
 <body>
 
@@ -142,6 +190,28 @@ onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
    <input id="phone" placeholder="Mobile Number">
    <input id="pincode" placeholder="Pincode">
    <textarea id="address" placeholder="Complete Delivery Address"></textarea>
+    
+<div class="location-map-box">
+  <label>Select Delivery Location</label>
+
+  <div id="deliveryMap"></div>
+
+  <button type="button"
+    class="location-map-btn"
+    onclick="getCurrentLocation('delivery')">
+    📍 Use Current Location
+  </button>
+
+  <button type="button"
+    class="location-map-btn"
+    onclick="resetMapLocation('delivery')">
+    Reset Location
+  </button>
+
+  <p id="deliveryMapInfo" class="location-map-info">
+    Select your delivery location on the map.
+  </p>
+</div>
   <select id="payment">
   <option value="upi" selected>UPI / Online Payment</option>
   <option value="cod">Cash on Delivery</option>
@@ -230,6 +300,28 @@ onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
 
       <label>Delivery Address</label>
       <textarea id="profileAddress" placeholder="Complete Address"></textarea>
+      
+<div class="location-map-box">
+  <label>Select Your Location</label>
+
+  <div id="profileMap"></div>
+
+  <button type="button"
+    class="location-map-btn"
+    onclick="getCurrentLocation('profile')">
+    📍 Use Current Location
+  </button>
+
+  <button type="button"
+    class="location-map-btn"
+    onclick="resetMapLocation('profile')">
+    Reset Location
+  </button>
+
+  <p id="profileMapInfo" class="location-map-info">
+    Search or move the map pin to select your address.
+  </p>
+</div>
 
       <button class="btn" style="width:100%" onclick="saveProfile()">
         Save Profile
@@ -522,7 +614,9 @@ async function openProfile(){
     return;
   }
 
-  document.getElementById("profileModal").style.display = "flex";
+document.getElementById("profileModal").style.display = "flex";
+  setTimeout(() => initLocationMap("profile"), 300);
+  
 
   document.getElementById("profileEmail").textContent =
     data.user.email || "";
@@ -868,7 +962,14 @@ function update(){
   document.getElementById("delivery").textContent = del;
   document.getElementById("total").textContent = sub + del;
 }
-function openCart(){document.getElementById("modal").style.display="flex";update()}function closeCart(){document.getElementById("modal").style.display="none"}
+function openCart(){
+  document.getElementById("modal").style.display = "flex";
+  update();
+
+  setTimeout(() => {
+    initLocationMap("delivery");
+  }, 300);
+}function closeCart(){document.getElementById("modal").style.display="none"}
 async function placeOrder(){
 
   if(cart.length === 0){
@@ -970,6 +1071,128 @@ function sendWhatsAppOrder(paymentMethod){
 }
   
 loadProducts();update();
+  
+// ===============================
+// HR GREENZ LOCATION MAP SYSTEM
+// ===============================
+
+const locationMaps = {};
+const locationMarkers = {};
+
+const defaultMapLocation = [20.5937, 78.9629];
+
+function initLocationMap(type) {
+
+  const mapId = type === "profile"
+    ? "profileMap"
+    : "deliveryMap";
+
+  const infoId = type === "profile"
+    ? "profileMapInfo"
+    : "deliveryMapInfo";
+
+  if (!document.getElementById(mapId) || !window.L) {
+    console.error("Map or Leaflet not available");
+    return;
+  }
+
+  if (locationMaps[type]) {
+    locationMaps[type].invalidateSize();
+    return;
+  }
+
+  const map = L.map(mapId).setView(defaultMapLocation, 5);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  const marker = L.marker(defaultMapLocation, {
+    draggable: true
+  }).addTo(map);
+
+  function updateLocation(latlng) {
+    document.getElementById(infoId).textContent =
+      "Selected Location: " +
+      latlng.lat.toFixed(6) + ", " +
+      latlng.lng.toFixed(6);
+  }
+
+  marker.on("dragend", function () {
+    updateLocation(marker.getLatLng());
+  });
+
+  map.on("click", function (event) {
+    marker.setLatLng(event.latlng);
+    updateLocation(event.latlng);
+  });
+
+  locationMaps[type] = map;
+  locationMarkers[type] = marker;
+
+  updateLocation(marker.getLatLng());
+}
+
+// USE CURRENT GPS LOCATION
+
+function getCurrentLocation(type) {
+
+  if (!navigator.geolocation) {
+    alert("Your browser does not support location.");
+    return;
+  }
+
+  initLocationMap(type);
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      const location = [lat, lng];
+
+      locationMaps[type].setView(location, 17);
+      locationMarkers[type].setLatLng(location);
+
+      const infoId = type === "profile"
+        ? "profileMapInfo"
+        : "deliveryMapInfo";
+
+      document.getElementById(infoId).textContent =
+        "Current Location Selected: " +
+        lat.toFixed(6) + ", " +
+        lng.toFixed(6);
+    },
+
+    function (error) {
+      alert("Location access nahi mila. Browser location permission allow karo.");
+      console.error(error);
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000
+    }
+  );
+}
+
+// RESET MAP LOCATION
+
+function resetMapLocation(type) {
+
+  initLocationMap(type);
+
+  locationMaps[type].setView(defaultMapLocation, 5);
+  locationMarkers[type].setLatLng(defaultMapLocation);
+
+  const infoId = type === "profile"
+    ? "profileMapInfo"
+    : "deliveryMapInfo";
+
+  document.getElementById(infoId).textContent =
+    "Please select your location on the map.";
+}
 </script>
 <div id="paymentQR" style="
 display:none;
