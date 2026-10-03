@@ -91,6 +91,219 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
   color: #555;
   margin-top: 8px;
 }
+
+/* YAHAN ADVANCED ADMIN CSS PASTE KARNA HAI */
+  .admin-box {
+  width: min(1100px, 100%) !important;
+  background: #f7faf7;
+}
+
+.admin-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 22px;
+}
+
+.admin-heading h2 {
+  margin: 0;
+  color: #138a36;
+}
+
+.admin-heading p {
+  color: #6b746d;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.admin-tag {
+  background: #202420;
+  color: white;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-stat {
+  background: white;
+  border: 1px solid #e5ebe6;
+  border-radius: 13px;
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 3px 12px #00000008;
+}
+
+.admin-stat span {
+  color: #68736a;
+  font-size: 13px;
+}
+
+.admin-stat strong {
+  font-size: 25px;
+  color: #138a36;
+  overflow-wrap: anywhere;
+}
+
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-toolbar input,
+.admin-toolbar select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce5dd;
+  border-radius: 9px;
+  background: white;
+  font-size: 14px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.admin-export {
+  border: 0;
+  background: #202420;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.admin-message {
+  color: #68736a;
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+.admin-order-card {
+  background: white;
+  border: 1px solid #e1e9e2;
+  border-radius: 14px;
+  padding: 17px;
+  margin: 13px 0;
+  box-shadow: 0 3px 12px #00000008;
+}
+
+.admin-order-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.admin-order-top h3 {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.admin-status {
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  background: #fff2cc;
+  color: #8a6200;
+}
+
+.admin-status.confirmed {
+  background: #e4efff;
+  color: #2457a6;
+}
+
+.admin-status.processing {
+  background: #f0e8ff;
+  color: #7040a5;
+}
+
+.admin-status.delivered {
+  background: #e1f7e8;
+  color: #137333;
+}
+
+.admin-customer {
+  line-height: 1.8;
+  font-size: 14px;
+  color: #444;
+  overflow-wrap: anywhere;
+}
+
+.admin-total {
+  font-size: 22px;
+  color: #138a36;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.admin-items {
+  background: #f5f9f5;
+  border-radius: 9px;
+  padding: 12px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-status-controls {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.admin-status-controls select {
+  padding: 10px;
+  border: 1px solid #dce5dd;
+  border-radius: 8px;
+  background: white;
+  flex: 1;
+  min-width: 140px;
+}
+
+.admin-status-controls button {
+  padding: 11px 17px;
+}
+
+@media(max-width:700px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-stat strong {
+    font-size: 21px;
+  }
+
+  .admin-box {
+    padding: 17px;
+  }
+}
+
 </style>
   
 <!-- Leaflet Map CSS -->
@@ -233,21 +446,63 @@ onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
  </div>
 </div>
   
-<!-- ADMIN ORDER DASHBOARD -->
+
+<!-- ADVANCED HR GREENZ ADMIN DASHBOARD -->
 <div class="modal" id="adminModal">
-  <div class="box" style="width:min(900px,100%);">
+  <div class="box admin-box">
 
     <button class="close" onclick="closeAdminPanel()">×</button>
 
-    <h2>⚙ HR Greenz Admin Dashboard</h2>
-
-    <p id="adminMessage" style="margin:10px 0;color:#555;">
-      Loading orders...
-    </p>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:15px 0;">
-      <button class="btn" onclick="loadAdminOrders()">🔄 Refresh Orders</button>
+    <div class="admin-heading">
+      <div>
+        <h2>⚙ HR Greenz Admin</h2>
+        <p>Manage orders, customers and sales</p>
+      </div>
+      <span class="admin-tag">ADMIN</span>
     </div>
+
+    <div class="admin-stats">
+      <div class="admin-stat">
+        <span>📦 Total Orders</span>
+        <strong id="statOrders">0</strong>
+      </div>
+      <div class="admin-stat">
+        <span>💰 Total Sales</span>
+        <strong id="statSales">₹0</strong>
+      </div>
+      <div class="admin-stat">
+        <span>⏳ Pending</span>
+        <strong id="statPending">0</strong>
+      </div>
+      <div class="admin-stat">
+        <span>✅ Delivered</span>
+        <strong id="statDelivered">0</strong>
+      </div>
+    </div>
+
+    <div class="admin-toolbar">
+      <input
+        id="adminSearch"
+        type="search"
+        placeholder="Search customer, mobile or order ID..."
+        oninput="renderAdminOrders()"
+      >
+
+      <select id="adminFilter" onchange="renderAdminOrders()">
+        <option value="all">All Orders</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="processing">Processing</option>
+        <option value="delivered">Delivered</option>
+      </select>
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn" onclick="loadAdminOrders()">🔄 Refresh</button>
+      <button class="admin-export" onclick="exportAdminOrders()">⬇ Export CSV</button>
+    </div>
+
+    <p id="adminMessage" class="admin-message">Loading orders...</p>
 
     <div id="adminOrders">
       <p class="empty">Orders will appear here.</p>
@@ -942,14 +1197,15 @@ async function saveProfile(){
 }
 
 
-// ===== ADMIN PANEL =====
 
-async function checkAdminAccess(){
+// ===== ADVANCED ADMIN PANEL =====
+
+let adminOrdersData = [];
+
+async function checkAdminAccess() {
   const { data: authData } = await supabaseClient.auth.getUser();
 
-  if(!authData.user){
-    return false;
-  }
+  if (!authData.user) return false;
 
   const { data: profile, error } = await supabaseClient
     .from("profiles")
@@ -960,114 +1216,230 @@ async function checkAdminAccess(){
   return !error && profile?.role === "admin";
 }
 
-async function openAdminPanel(){
+async function openAdminPanel() {
   const isAdmin = await checkAdminAccess();
 
-  if(!isAdmin){
+  if (!isAdmin) {
     alert("Access denied! Admin only.");
     return;
   }
 
   document.getElementById("adminModal").style.display = "flex";
-  loadAdminOrders();
+  await loadAdminOrders();
 }
 
-function closeAdminPanel(){
+function closeAdminPanel() {
   document.getElementById("adminModal").style.display = "none";
 }
 
-async function loadAdminOrders(){
+async function loadAdminOrders() {
   const message = document.getElementById("adminMessage");
   const container = document.getElementById("adminOrders");
 
-  if(!await checkAdminAccess()){
+  if (!await checkAdminAccess()) {
     message.textContent = "Admin access required.";
     container.replaceChildren();
     return;
   }
 
   message.textContent = "Loading orders...";
-  container.replaceChildren();
+  container.textContent = "";
 
   const { data: orders, error } = await supabaseClient
     .from("orders")
     .select("id,customer_name,customer_phone,pincode,delivery_address,payment_method,total,status")
     .order("id", { ascending: false });
 
-  if(error){
+  if (error) {
     message.textContent = "Orders load nahi hue: " + error.message;
     return;
   }
 
-  if(!orders || orders.length === 0){
-    message.textContent = "Abhi koi order nahi hai.";
+  adminOrdersData = orders || [];
+
+  // Fetch product details for all orders
+  if (adminOrdersData.length > 0) {
+    const orderIds = adminOrdersData.map(order => order.id);
+
+    const { data: items, error: itemsError } = await supabaseClient
+      .from("order_items")
+      .select("order_id,product_name,price,quantity")
+      .in("order_id", orderIds);
+
+    if (itemsError) {
+      console.error("ORDER ITEMS ERROR:", itemsError);
+    }
+
+    const itemsByOrder = {};
+
+    (items || []).forEach(item => {
+      if (!itemsByOrder[item.order_id]) {
+        itemsByOrder[item.order_id] = [];
+      }
+
+      itemsByOrder[item.order_id].push(item);
+    });
+
+    adminOrdersData.forEach(order => {
+      order.items = itemsByOrder[order.id] || [];
+    });
+  }
+
+  updateAdminStats();
+  renderAdminOrders();
+
+  message.textContent = "Showing " + adminOrdersData.length + " orders.";
+}
+
+function updateAdminStats() {
+  const totalOrders = adminOrdersData.length;
+
+  const totalSales = adminOrdersData.reduce(
+    (sum, order) => sum + Number(order.total || 0), 0
+  );
+
+  const pending = adminOrdersData.filter(
+    order => String(order.status).toLowerCase() === "pending"
+  ).length;
+
+  const delivered = adminOrdersData.filter(
+    order => String(order.status).toLowerCase() === "delivered"
+  ).length;
+
+  document.getElementById("statOrders").textContent = totalOrders;
+  document.getElementById("statSales").textContent =
+    "₹" + totalSales.toLocaleString("en-IN");
+  document.getElementById("statPending").textContent = pending;
+  document.getElementById("statDelivered").textContent = delivered;
+}
+
+function renderAdminOrders() {
+  const container = document.getElementById("adminOrders");
+  const search = document.getElementById("adminSearch").value
+    .trim().toLowerCase();
+
+  const filter = document.getElementById("adminFilter").value;
+
+  const filtered = adminOrdersData.filter(order => {
+    const status = String(order.status || "pending").toLowerCase();
+
+    const matchesStatus = filter === "all" || status === filter;
+
+    const searchableText = [
+      order.id,
+      order.customer_name,
+      order.customer_phone,
+      order.pincode,
+      order.delivery_address
+    ].join(" ").toLowerCase();
+
+    return matchesStatus && searchableText.includes(search);
+  });
+
+  container.replaceChildren();
+
+  if (filtered.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "No matching orders found.";
+    container.appendChild(empty);
     return;
   }
 
-  message.textContent = "Total Orders: " + orders.length;
-
-  orders.forEach(order => {
+  filtered.forEach(order => {
     const card = document.createElement("div");
-    card.style.cssText =
-      "border:1px solid #ddd;border-radius:10px;padding:15px;margin:12px 0;background:#fff;";
+    card.className = "admin-order-card";
+
+    const status = String(order.status || "pending").toLowerCase();
+
+    const top = document.createElement("div");
+    top.className = "admin-order-top";
 
     const heading = document.createElement("h3");
-    heading.textContent = "Order: " + order.id;
+    heading.textContent = "📦 Order: " + order.id;
 
-    const details = document.createElement("p");
-    details.style.cssText = "line-height:1.7;margin:10px 0;";
-    details.textContent =
-      "Customer: " + (order.customer_name || "-") +
-      " | Mobile: " + (order.customer_phone || "-") +
-      " | Pincode: " + (order.pincode || "-") +
-      " | Address: " + (order.delivery_address || "-") +
-      " | Payment: " + (order.payment_method || "-") +
-      " | Total: ₹" + (order.total ?? "-");
+    const statusBadge = document.createElement("span");
+    statusBadge.className = "admin-status " + status;
+    statusBadge.textContent =
+      status.charAt(0).toUpperCase() + status.slice(1);
 
-    const statusLabel = document.createElement("label");
-    statusLabel.textContent = "Order Status: ";
-    statusLabel.style.fontWeight = "bold";
+    top.append(heading, statusBadge);
+
+    const customer = document.createElement("div");
+    customer.className = "admin-customer";
+    customer.textContent =
+      "👤 Customer: " + (order.customer_name || "-") +
+      "\n📞 Mobile: " + (order.customer_phone || "-") +
+      "\n📍 Pincode: " + (order.pincode || "-") +
+      "\n🏠 Address: " + (order.delivery_address || "-") +
+      "\n💳 Payment: " + (order.payment_method || "-");
+    customer.style.whiteSpace = "pre-line";
+
+    const total = document.createElement("div");
+    total.className = "admin-total";
+    total.textContent = "Total: ₹" +
+      Number(order.total || 0).toLocaleString("en-IN");
+
+    const itemsBox = document.createElement("div");
+    itemsBox.className = "admin-items";
+
+    const itemsTitle = document.createElement("strong");
+    itemsTitle.textContent = "🛒 Ordered Products";
+    itemsBox.appendChild(itemsTitle);
+
+    if (order.items && order.items.length > 0) {
+      order.items.forEach(item => {
+        const line = document.createElement("div");
+        line.textContent =
+          item.product_name + " × " + item.quantity +
+          " = ₹" + (Number(item.price) * Number(item.quantity));
+        itemsBox.appendChild(line);
+      });
+    } else {
+      const noItems = document.createElement("div");
+      noItems.textContent = "Product details unavailable.";
+      itemsBox.appendChild(noItems);
+    }
+
+    const controls = document.createElement("div");
+    controls.className = "admin-status-controls";
 
     const select = document.createElement("select");
-    select.style.cssText = "padding:9px;margin:8px;";
 
-    ["pending","confirmed","processing","delivered"].forEach(status => {
+    ["pending", "confirmed", "processing", "delivered"].forEach(value => {
       const option = document.createElement("option");
-      option.value = status;
-      option.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      option.value = value;
+      option.textContent =
+        value.charAt(0).toUpperCase() + value.slice(1);
       select.appendChild(option);
     });
 
-    const currentStatus = String(order.status || "pending").toLowerCase();
-    if(["pending","confirmed","processing","delivered"].includes(currentStatus)){
-      select.value = currentStatus;
-    }
+    select.value = ["pending", "confirmed", "processing", "delivered"]
+      .includes(status) ? status : "pending";
 
     const saveButton = document.createElement("button");
     saveButton.className = "btn";
     saveButton.textContent = "Update Status";
-    saveButton.style.marginLeft = "8px";
     saveButton.onclick = () => updateOrderStatus(order.id, select.value);
 
-    card.appendChild(heading);
-    card.appendChild(details);
-    card.appendChild(statusLabel);
-    card.appendChild(select);
-    card.appendChild(saveButton);
+    controls.append(select, saveButton);
 
+    card.append(top, customer, total, itemsBox, controls);
     container.appendChild(card);
   });
 }
 
-async function updateOrderStatus(orderId, newStatus){
-  const allowedStatuses = ["pending","confirmed","processing","delivered"];
+async function updateOrderStatus(orderId, newStatus) {
+  const allowedStatuses = [
+    "pending", "confirmed", "processing", "delivered"
+  ];
 
-  if(!allowedStatuses.includes(newStatus)){
+  if (!allowedStatuses.includes(newStatus)) {
     alert("Invalid order status.");
     return;
   }
 
-  if(!await checkAdminAccess()){
+  if (!await checkAdminAccess()) {
     alert("Admin access required.");
     return;
   }
@@ -1077,13 +1449,59 @@ async function updateOrderStatus(orderId, newStatus){
     .update({ status: newStatus })
     .eq("id", orderId);
 
-  if(error){
+  if (error) {
     alert("Status update failed: " + error.message);
     return;
   }
 
-  alert("Order status updated!");
-  loadAdminOrders();
+  alert("Order status updated successfully!");
+  await loadAdminOrders();
+}
+
+function exportAdminOrders() {
+  if (adminOrdersData.length === 0) {
+    alert("No orders available to export.");
+    return;
+  }
+
+  const headers = [
+    "Order ID", "Customer", "Mobile", "Pincode",
+    "Address", "Payment", "Total", "Status", "Products"
+  ];
+
+  const rows = adminOrdersData.map(order => [
+    order.id,
+    order.customer_name,
+    order.customer_phone,
+    order.pincode,
+    order.delivery_address,
+    order.payment_method,
+    order.total,
+    order.status,
+    (order.items || []).map(item =>
+      item.product_name + " x " + item.quantity
+    ).join("; ")
+  ]);
+
+  const escapeCSV = value =>
+    '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(escapeCSV).join(","))
+    .join("\r\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "HR-Greenz-Orders.csv";
+  link.click();
+
+  URL.revokeObjectURL(url);
 }
 // LOGOUT
 async function logoutUser(){
