@@ -438,16 +438,13 @@ setTimeout(() => {
 
 // UPDATE LOGIN BUTTON
 
+
 async function updateAuthButton(){
 
-  const { data } =
-    await supabaseClient.auth.getUser();
+  const { data } = await supabaseClient.auth.getUser();
 
-  const button =
-    document.getElementById("authButton");
-
-  const profileButton =
-    document.getElementById("profileButton");
+  const button = document.getElementById("authButton");
+  const profileButton = document.getElementById("profileButton");
 
   if(!button || !profileButton) return;
 
@@ -467,30 +464,7 @@ async function updateAuthButton(){
 
   }
 }
-
-  const { data } =
-    await supabaseClient.auth.getUser();
-
-  const button =
-    document.querySelector(".auth-btn");
-
-  if(!button) return;
-
-
-  if(data.user){
-
-    button.textContent = "Logout";
-
-    button.onclick = logoutUser;
-
-  }else{
-
-    button.textContent = "Login / Sign Up";
-
-    button.onclick = openAuth;
-
-  }
-}
+  
   
 // ===============================
 // CUSTOMER PROFILE SYSTEM
