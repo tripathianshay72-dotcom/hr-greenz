@@ -1221,45 +1221,6 @@ async function getCurrentLocation(type) {
   );
 }
 
-  if (!navigator.geolocation) {
-    alert("Your browser does not support location.");
-    return;
-  }
-
-  initLocationMap(type);
-
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      const location = [lat, lng];
-
-      locationMaps[type].setView(location, 17);
-      locationMarkers[type].setLatLng(location);
-
-      const infoId = type === "profile"
-        ? "profileMapInfo"
-        : "deliveryMapInfo";
-
-      document.getElementById(infoId).textContent =
-        "Current Location Selected: " +
-        lat.toFixed(6) + ", " +
-        lng.toFixed(6);
-    },
-
-    function (error) {
-      alert("Location access nahi mila. Browser location permission allow karo.");
-      console.error(error);
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000
-    }
-  );
-}
 
 // RESET MAP LOCATION
 
