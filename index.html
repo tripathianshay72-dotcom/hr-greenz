@@ -443,7 +443,7 @@ async function updateAuthButton(){
 
   const { data } = await supabaseClient.auth.getUser();
 
-  const button = document.getElementById("authButton");
+  const button = document.querySelector("nav .auth-btn");
   const profileButton = document.getElementById("profileButton");
 
   if(!button || !profileButton) return;
