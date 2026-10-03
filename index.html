@@ -119,6 +119,12 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
 onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
 👤 Profile
 </button>
+    <button class="auth-btn"
+  id="adminButton"
+  onclick="openAdminPanel()"
+  style="display:none;background:#202420;color:white;">
+  ⚙ Admin Panel
+</button>
 </nav>
   <button class="cart-btn" onclick="openCart()">🛒 Cart <span id="count">0</span></button>
 </header>
@@ -219,6 +225,29 @@ onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
    <button class="btn" style="width:100%;margin-top:5px" onclick="placeOrder()">Place Order on WhatsApp 📲</button>
   </div>
  </div>
+</div>
+  
+<!-- ADMIN ORDER DASHBOARD -->
+<div class="modal" id="adminModal">
+  <div class="box" style="width:min(900px,100%);">
+
+    <button class="close" onclick="closeAdminPanel()">×</button>
+
+    <h2>⚙ HR Greenz Admin Dashboard</h2>
+
+    <p id="adminMessage" style="margin:10px 0;color:#555;">
+      Loading orders...
+    </p>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:15px 0;">
+      <button class="btn" onclick="loadAdminOrders()">🔄 Refresh Orders</button>
+    </div>
+
+    <div id="adminOrders">
+      <p class="empty">Orders will appear here.</p>
+    </div>
+
+  </div>
 </div>
   <!-- LOGIN / SIGN UP MODAL -->
 <div class="modal" id="authModal">
@@ -531,7 +560,44 @@ setTimeout(() => {
 // UPDATE LOGIN BUTTON
 
 
+
 async function updateAuthButton(){
+  const { data } = await supabaseClient.auth.getUser();
+
+  const button = document.getElementById("authButton");
+  const profileButton = document.getElementById("profileButton");
+  const adminButton = document.getElementById("adminButton");
+
+  if(!button || !profileButton) return;
+
+  if(data.user){
+    button.textContent = "Logout";
+    button.onclick = logoutUser;
+    profileButton.style.display = "inline-block";
+
+    if(adminButton){
+      const { data: profile, error } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      adminButton.style.display =
+        !error && profile?.role === "admin"
+          ? "inline-block"
+          : "none";
+    }
+
+  }else{
+    button.textContent = "Login / Sign Up";
+    button.onclick = openAuth;
+    profileButton.style.display = "none";
+
+    if(adminButton){
+      adminButton.style.display = "none";
+    }
+  }
+}
 
   const { data } = await supabaseClient.auth.getUser();
 
@@ -759,6 +825,149 @@ async function saveProfile(){
 }
 
 
+// ===== ADMIN PANEL =====
+
+async function checkAdminAccess(){
+  const { data: authData } = await supabaseClient.auth.getUser();
+
+  if(!authData.user){
+    return false;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", authData.user.id)
+    .single();
+
+  return !error && profile?.role === "admin";
+}
+
+async function openAdminPanel(){
+  const isAdmin = await checkAdminAccess();
+
+  if(!isAdmin){
+    alert("Access denied! Admin only.");
+    return;
+  }
+
+  document.getElementById("adminModal").style.display = "flex";
+  loadAdminOrders();
+}
+
+function closeAdminPanel(){
+  document.getElementById("adminModal").style.display = "none";
+}
+
+async function loadAdminOrders(){
+  const message = document.getElementById("adminMessage");
+  const container = document.getElementById("adminOrders");
+
+  if(!await checkAdminAccess()){
+    message.textContent = "Admin access required.";
+    container.replaceChildren();
+    return;
+  }
+
+  message.textContent = "Loading orders...";
+  container.replaceChildren();
+
+  const { data: orders, error } = await supabaseClient
+    .from("orders")
+    .select("id,customer_name,customer_phone,pincode,delivery_address,payment_method,total,status")
+    .order("id", { ascending: false });
+
+  if(error){
+    message.textContent = "Orders load nahi hue: " + error.message;
+    return;
+  }
+
+  if(!orders || orders.length === 0){
+    message.textContent = "Abhi koi order nahi hai.";
+    return;
+  }
+
+  message.textContent = "Total Orders: " + orders.length;
+
+  orders.forEach(order => {
+    const card = document.createElement("div");
+    card.style.cssText =
+      "border:1px solid #ddd;border-radius:10px;padding:15px;margin:12px 0;background:#fff;";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Order: " + order.id;
+
+    const details = document.createElement("p");
+    details.style.cssText = "line-height:1.7;margin:10px 0;";
+    details.textContent =
+      "Customer: " + (order.customer_name || "-") +
+      " | Mobile: " + (order.customer_phone || "-") +
+      " | Pincode: " + (order.pincode || "-") +
+      " | Address: " + (order.delivery_address || "-") +
+      " | Payment: " + (order.payment_method || "-") +
+      " | Total: ₹" + (order.total ?? "-");
+
+    const statusLabel = document.createElement("label");
+    statusLabel.textContent = "Order Status: ";
+    statusLabel.style.fontWeight = "bold";
+
+    const select = document.createElement("select");
+    select.style.cssText = "padding:9px;margin:8px;";
+
+    ["pending","confirmed","processing","delivered"].forEach(status => {
+      const option = document.createElement("option");
+      option.value = status;
+      option.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      select.appendChild(option);
+    });
+
+    const currentStatus = String(order.status || "pending").toLowerCase();
+    if(["pending","confirmed","processing","delivered"].includes(currentStatus)){
+      select.value = currentStatus;
+    }
+
+    const saveButton = document.createElement("button");
+    saveButton.className = "btn";
+    saveButton.textContent = "Update Status";
+    saveButton.style.marginLeft = "8px";
+    saveButton.onclick = () => updateOrderStatus(order.id, select.value);
+
+    card.appendChild(heading);
+    card.appendChild(details);
+    card.appendChild(statusLabel);
+    card.appendChild(select);
+    card.appendChild(saveButton);
+
+    container.appendChild(card);
+  });
+}
+
+async function updateOrderStatus(orderId, newStatus){
+  const allowedStatuses = ["pending","confirmed","processing","delivered"];
+
+  if(!allowedStatuses.includes(newStatus)){
+    alert("Invalid order status.");
+    return;
+  }
+
+  if(!await checkAdminAccess()){
+    alert("Admin access required.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("orders")
+    .update({ status: newStatus })
+    .eq("id", orderId);
+
+  if(error){
+    alert("Status update failed: " + error.message);
+    return;
+  }
+
+  alert("Order status updated!");
+  loadAdminOrders();
+}
 // LOGOUT
 async function logoutUser(){
 
