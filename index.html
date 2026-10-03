@@ -562,6 +562,7 @@ async function openProfile(){
 
     document.getElementById("profileAddress").value =
       profile.address || "";
+    await loadMyOrders(data.user);
 
   }catch(err){
 
@@ -578,6 +579,46 @@ function closeProfile(){
 
   document.getElementById("profileModal").style.display = "none";
 
+}
+  
+async function loadMyOrders(user){
+  const target = document.getElementById("profileOrders");
+  target.textContent = "Loading your orders...";
+
+  const { data: orders, error } = await supabaseClient
+    .from("orders")
+    .select("id,total,status")
+    .eq("user_id", user.id);
+
+  if(error){
+    console.error("ORDERS ERROR:", error);
+    target.textContent = "Orders load nahi ho rahe: " + error.message;
+    return;
+  }
+
+  target.innerHTML = "";
+
+  if(!orders || orders.length === 0){
+    target.textContent = "Abhi koi order nahi mila.";
+    return;
+  }
+
+  orders.forEach(order => {
+    const item = document.createElement("div");
+    item.style.cssText = "padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;";
+
+    const orderId = document.createElement("p");
+    orderId.textContent = "Order ID: " + order.id;
+
+    const total = document.createElement("p");
+    total.textContent = "Total: ₹" + order.total;
+
+    const status = document.createElement("p");
+    status.textContent = "Status: " + order.status;
+
+    item.append(orderId, total, status);
+    target.appendChild(item);
+  });
 }
 
 
