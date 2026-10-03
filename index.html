@@ -67,6 +67,10 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
   <a href="#products">Shop</a>
   <a href="#about">About</a>
   <button class="auth-btn" onclick="openAuth()">Login / Sign Up</button>
+    <button class="auth-btn" id="profileButton"
+onclick="openProfile()" style="display:none;background:#f2b900;color:#202420;">
+👤 Profile
+</button>
 </nav>
   <button class="cart-btn" onclick="openCart()">🛒 Cart <span id="count">0</span></button>
 </header>
@@ -203,6 +207,45 @@ footer{background:#0d6428;color:#fff;padding:35px 6%;display:grid;grid-template-
         style="text-align:center;margin-top:10px;font-weight:bold;"
       ></p>
 
+    </div>
+  </div>
+</div>
+  
+<!-- CUSTOMER PROFILE MODAL -->
+<div class="modal" id="profileModal">
+  <div class="box">
+
+    <button class="close" onclick="closeProfile()">×</button>
+
+    <h2>👤 My Profile</h2>
+
+    <p id="profileEmail" style="color:#6b746d;margin-bottom:15px;"></p>
+
+    <div class="form">
+      <label>Full Name</label>
+      <input id="profileName" type="text" placeholder="Your Name">
+
+      <label>Mobile Number</label>
+      <input id="profilePhone" type="tel" placeholder="Mobile Number">
+
+      <label>Delivery Address</label>
+      <textarea id="profileAddress" placeholder="Complete Address"></textarea>
+
+      <button class="btn" style="width:100%" onclick="saveProfile()">
+        Save Profile
+      </button>
+
+      <p id="profileMessage" style="margin-top:10px;text-align:center;"></p>
+
+      <h3 style="color:#138a36;margin-top:20px;">🛍️ My Orders</h3>
+      <div id="profileOrders">
+        <p class="empty">Your orders will appear here.</p>
+      </div>
+
+      <button class="auth-btn" style="width:100%;margin-top:15px;background:#555;"
+        onclick="logoutUser()">
+        Logout
+      </button>
     </div>
   </div>
 </div>
@@ -363,18 +406,67 @@ async function handleAuth(){
   }
 
 
-  message.style.color = "#138a36";
-  message.textContent = "Login successful!";
 
-  setTimeout(() => {
-    closeAuth();
-    updateAuthButton();
-  }, 800);
+try{
+
+  await ensureUserProfile(data.user);
+
+}catch(profileError){
+
+  console.error(profileError);
+
+  message.style.color = "red";
+  message.textContent = profileError.message;
+
+  return;
+}
+
+message.style.color = "#138a36";
+message.textContent = "Login successful!";
+
+setTimeout(() => {
+
+  closeAuth();
+
+  updateAuthButton();
+
+  openProfile();
+
+}, 500);
 }
 
 
 // UPDATE LOGIN BUTTON
+
 async function updateAuthButton(){
+
+  const { data } =
+    await supabaseClient.auth.getUser();
+
+  const button =
+    document.getElementById("authButton");
+
+  const profileButton =
+    document.getElementById("profileButton");
+
+  if(!button || !profileButton) return;
+
+  if(data.user){
+
+    button.textContent = "Logout";
+    button.onclick = logoutUser;
+
+    profileButton.style.display = "inline-block";
+
+  }else{
+
+    button.textContent = "Login / Sign Up";
+    button.onclick = openAuth;
+
+    profileButton.style.display = "none";
+
+  }
+}
 
   const { data } =
     await supabaseClient.auth.getUser();
@@ -399,6 +491,149 @@ async function updateAuthButton(){
 
   }
 }
+  
+// ===============================
+// CUSTOMER PROFILE SYSTEM
+// ===============================
+
+async function ensureUserProfile(user){
+
+  const { data: existing, error: readError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+  if(readError) throw readError;
+
+  if(!existing){
+
+    const { error } = await supabaseClient
+      .from("profiles")
+      .insert({
+        id: user.id,
+        name: user.user_metadata?.full_name || "",
+        phone: "",
+        address: ""
+      });
+
+    if(error) throw error;
+  }
+}
+
+
+// OPEN PROFILE
+async function openProfile(){
+
+  const { data, error } =
+    await supabaseClient.auth.getUser();
+
+  if(error || !data.user){
+    openAuth();
+    return;
+  }
+
+  document.getElementById("profileModal").style.display = "flex";
+
+  document.getElementById("profileEmail").textContent =
+    data.user.email || "";
+
+  document.getElementById("profileMessage").textContent = "";
+
+  try{
+
+    await ensureUserProfile(data.user);
+
+    const { data: profile, error: profileError } =
+      await supabaseClient
+        .from("profiles")
+        .select("name,phone,address")
+        .eq("id", data.user.id)
+        .single();
+
+    if(profileError) throw profileError;
+
+    document.getElementById("profileName").value =
+      profile.name || "";
+
+    document.getElementById("profilePhone").value =
+      profile.phone || "";
+
+    document.getElementById("profileAddress").value =
+      profile.address || "";
+
+  }catch(err){
+
+    console.error("PROFILE ERROR:", err);
+
+    document.getElementById("profileMessage").textContent =
+      "Profile Error: " + err.message;
+  }
+}
+
+
+// CLOSE PROFILE
+function closeProfile(){
+
+  document.getElementById("profileModal").style.display = "none";
+
+}
+
+
+// SAVE PROFILE
+async function saveProfile(){
+
+  const { data } =
+    await supabaseClient.auth.getUser();
+
+  if(!data.user){
+    alert("Please login first.");
+    return;
+  }
+
+  const name =
+    document.getElementById("profileName").value.trim();
+
+  const phone =
+    document.getElementById("profilePhone").value.trim();
+
+  const address =
+    document.getElementById("profileAddress").value.trim();
+
+  const message =
+    document.getElementById("profileMessage");
+
+  if(!name){
+    message.style.color = "red";
+    message.textContent = "Please enter your name.";
+    return;
+  }
+
+  const { error } =
+    await supabaseClient
+      .from("profiles")
+      .update({
+        name: name,
+        phone: phone,
+        address: address
+      })
+      .eq("id", data.user.id);
+
+  if(error){
+
+    console.error(error);
+
+    message.style.color = "red";
+    message.textContent = error.message;
+
+    return;
+  }
+
+  message.style.color = "#138a36";
+  message.textContent = "Profile saved successfully!";
+
+}
 
 
 // LOGOUT
@@ -415,6 +650,7 @@ async function logoutUser(){
   }
 
   alert("Logout successful!");
+  closeProfile();
 
   updateAuthButton();
 }
@@ -630,11 +866,14 @@ async function placeOrder(){
   const total = sub + delivery;
 
   const orderId = crypto.randomUUID();
+  const { data: authData } = await supabaseClient.auth.getUser();
+const currentUser = authData.user;
 
   const { error: orderError } = await supabaseClient
     .from("orders")
     .insert({
       id: orderId,
+      user_id: currentUser ? currentUser.id : null,
       customer_name: n,
       customer_phone: ph,
       delivery_address: ad,
